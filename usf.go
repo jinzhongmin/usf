@@ -40,9 +40,8 @@ func Malloc(size uint64, typeSize uint64) unsafe.Pointer {
 func MallocOf(size uint64, zeroVal interface{}) unsafe.Pointer {
 	return C.malloc(C.ulonglong(size * Sizeof(zeroVal)))
 }
-func Free(p interface{}) {
-	_, a := anyPtr(p)
-	C.free(a)
+func Free(p unsafe.Pointer) {
+	C.free(p)
 }
 func Memset(p unsafe.Pointer, bytev int32, bytec uint64) {
 	v := (C.int)(int32(bytev))
