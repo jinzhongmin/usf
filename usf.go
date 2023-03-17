@@ -11,12 +11,12 @@ import (
 
 // 得到指针存储的值
 func p2v(p unsafe.Pointer) uint64 {
-	return *(*uint64)((unsafe.Pointer)(&p))
+	return uint64(uintptr(p))
 }
 
 // 将一个值放入指针
 func v2p(v uint64, p *unsafe.Pointer) {
-	*(*uint64)((unsafe.Pointer)(p)) = v
+	(*(*[1]uint64)((unsafe.Pointer)(p)))[0] = v
 }
 
 func anyPtr(i interface{}) (len uint64, ptr unsafe.Pointer) {
