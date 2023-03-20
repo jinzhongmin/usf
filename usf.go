@@ -3,6 +3,7 @@ package usf
 /*
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 */
 import "C"
 import (
@@ -35,17 +36,17 @@ func Sizeof(i interface{}) uint64 {
 	return l
 }
 func Malloc(size uint64, typeSize uint64) unsafe.Pointer {
-	return C.malloc(C.ulonglong(size * typeSize))
+	return C.malloc(C.uint64_t(size * typeSize))
 }
 func MallocOf(size uint64, zeroVal interface{}) unsafe.Pointer {
-	return C.malloc(C.ulonglong(size * Sizeof(zeroVal)))
+	return C.malloc(C.uint64_t(size * Sizeof(zeroVal)))
 }
 func Free(p unsafe.Pointer) {
 	C.free(p)
 }
 func Memset(p unsafe.Pointer, bytev int32, bytec uint64) {
 	v := (C.int)(int32(bytev))
-	c := (C.ulonglong)(bytec)
+	c := (C.uint64_t)(bytec)
 	C.memset(p, v, c)
 }
 func Slice(p unsafe.Pointer, n uint64) unsafe.Pointer {
