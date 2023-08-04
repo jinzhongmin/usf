@@ -49,6 +49,7 @@ func Memset(p unsafe.Pointer, bytev int32, bytec uint64) {
 	c := (C.uint64_t)(bytec)
 	C.memset(p, v, c)
 }
+func Memcpy(dest, src unsafe.Pointer, n uint64) { C.memcpy(dest, src, (C.uint64_t)(n)) }
 func Slice(p unsafe.Pointer, n uint64) unsafe.Pointer {
 	s := &slice{addr: p, len: n, cap: n}
 	return unsafe.Pointer(s)
