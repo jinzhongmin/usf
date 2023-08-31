@@ -23,6 +23,14 @@ type (
 	_ptr struct{ p unsafe.Pointer }
 )
 
+func UnwarpSlice(sc interface{}) (addr unsafe.Pointer, len int, cap int) {
+	p := (*_any)(unsafe.Pointer(&sc)).addr
+	scp := (*_slice)(p)
+	addr = scp.addr
+	len = int(scp.len)
+	cap = int(scp.cap)
+	return
+}
 func AddrOf(i interface{}) unsafe.Pointer {
 	return (*_any)(unsafe.Pointer(&i)).addr
 }
@@ -38,6 +46,7 @@ func MallocN(n uint64, typeSize uint64) unsafe.Pointer {
 func MallocOf(size uint64, zeroVal interface{}) unsafe.Pointer {
 	return C.malloc(C.uint64_t(size * SizeOf(zeroVal)))
 }
+func Realloc(ptr unsafe.Pointer, size uint64) unsafe.Pointer { return C.realloc(ptr, C.size_t(size)) }
 func Free(p unsafe.Pointer) {
 	if p == nil {
 		return
@@ -51,7 +60,6 @@ func Memcpy(dest, src unsafe.Pointer, n uint64) { C.memcpy(dest, src, C.uint64_t
 func Slice(p unsafe.Pointer, n uint64) unsafe.Pointer {
 	return unsafe.Pointer(&_slice{addr: p, len: n, cap: n})
 }
-
 func Push(dst unsafe.Pointer, src unsafe.Pointer)   { (*_ptr)(dst).p = src }
 func Pop(ptr unsafe.Pointer) (inPtr unsafe.Pointer) { return (*_ptr)(ptr).p }
 func PushAt(list unsafe.Pointer, idx uint64, ptr unsafe.Pointer) {
@@ -60,16 +68,3 @@ func PushAt(list unsafe.Pointer, idx uint64, ptr unsafe.Pointer) {
 func PopAt(list unsafe.Pointer, idx uint64) (ptrAddr unsafe.Pointer) {
 	return (*_ptr)(unsafe.Add(list, idx*8)).p
 }
-
-// func Ptrs(clist unsafe.Pointer, num uint64) []unsafe.Pointer {
-// 	return *(*[]unsafe.Pointer)(Slice(clist, num))
-// }
-// func Clist(src []unsafe.Pointer) unsafe.Pointer {
-// 	if src == nil {
-// 		return nil
-// 	}
-// 	dst := Malloc(uint64(len(src)), 8)
-// 	p := *(*[]unsafe.Pointer)(Slice(dst, uint64(len(src))))
-// 	copy(p, src)
-// 	return dst
-// }
